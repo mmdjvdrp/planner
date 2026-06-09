@@ -641,9 +641,7 @@ console.log("FIREBASE OK");
   <script>
 
 setTimeout(() => {
-  console.log("db =", window.db);
-  console.log("fbGet =", window.fbGet);
-  console.log("fbSet =", window.fbSet);
+
 }, 1000);
 
 </script>
@@ -1167,7 +1165,9 @@ console.log("db =", window.db);
 console.log("fbGet =", window.fbGet);
 console.log("fbSet =", window.fbSet);
 
-(async ()=>{
+window.addEventListener("load", async () => {
+
+  await new Promise(r => setTimeout(r, 1500));
 
   await loadCloud();
 
@@ -1176,7 +1176,7 @@ console.log("fbSet =", window.fbSet);
   render();
   updateLiveButton();
 
-})();
+});
 </script>
 </body>
 </html>
