@@ -1,3 +1,17 @@
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+
+<button id="register-btn">
+ثبت نام
+</button>
+
+<button id="login-btn">
+ورود
+</button>
+
+<button id="logout-btn">
+خروج
+</button>
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -606,7 +620,13 @@
 
 </div>
 <script type="module">
-
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 
 import {
@@ -627,8 +647,15 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+  
 const db = getDatabase(app);
+const auth = getAuth(app);
 
+window.auth = auth;
+window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+window.signOutUser = signOut;
+window.onAuthStateChangedUser = onAuthStateChanged;
 window.db = db;
 window.fbRef = ref;
 window.fbGet = get;
@@ -654,6 +681,8 @@ function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
 
 async function saveCloud(){
 
+  if(!window.auth.currentUser) return;
+
   const data = {
     events,
     cats,
@@ -661,18 +690,24 @@ async function saveCloud(){
     theme
   };
 
-await window.fbSet(
-  window.fbRef(window.db, "plannerData"),
+  await window.fbSet(
+    window.fbRef(
+      window.db,
+      "users/" + window.auth.currentUser.uid + "/plannerData"
+    ),
     data
   );
+
 }
 
 async function loadCloud(){
 
-  const snap =
-  await window.fbGet(
-    window.fbRef(window.db, "plannerData")
-  );
+ const snap = await window.fbGet(
+  window.fbRef(
+    window.db,
+    "users/" + auth.currentUser.uid + "/plannerData"
+  )
+);
 
   if(!snap.exists()) return;
 
@@ -1177,6 +1212,84 @@ window.addEventListener("load", async () => {
   updateLiveButton();
 
 });
+</script>
+  <script>
+
+document.getElementById("register-btn").onclick = async () => {
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+
+    await window.createUserWithEmailAndPassword(
+      window.auth,
+      email,
+      password
+    );
+
+    alert("ثبت نام موفق");
+
+  } catch(err) {
+
+    alert(err.message);
+
+  }
+
+};
+
+document.getElementById("login-btn").onclick = async () => {
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+
+    await window.signInWithEmailAndPassword(
+      window.auth,
+      email,
+      password
+    );
+
+    alert("ورود موفق");
+
+  } catch(err) {
+
+    alert(err.message);
+
+  }
+
+};
+
+document.getElementById("logout-btn").onclick = async () => {
+
+  await window.signOutUser(window.auth);
+
+};
+
+window.onAuthStateChangedUser(
+  window.auth,
+  async (user) => {
+
+    if(user){
+
+      await loadCloud();
+
+      renderCats();
+      render();
+      updateLiveButton();
+
+      console.log("LOGIN", user.uid);
+
+    }else{
+
+      console.log("LOGOUT");
+
+    }
+
+  }
+);
+
 </script>
 </body>
 </html>
