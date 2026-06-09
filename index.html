@@ -649,8 +649,8 @@ async function saveCloud(){
     theme
   };
 
-  await fbSet(
-    fbRef(db, "plannerData"),
+await window.fbSet(
+  window.fbRef(window.db, "plannerData"),
     data
   );
 }
@@ -658,9 +658,9 @@ async function saveCloud(){
 async function loadCloud(){
 
   const snap =
-    await fbGet(
-      fbRef(db, "plannerData")
-    );
+  await window.fbGet(
+    window.fbRef(window.db, "plannerData")
+  );
 
   if(!snap.exists()) return;
 
@@ -1149,6 +1149,9 @@ document.getElementById('end-time').addEventListener('keydown', e=>{
 
 setupTimeInput(document.getElementById('start-time'));
 setupTimeInput(document.getElementById('end-time'));
+console.log("db =", window.db);
+console.log("fbGet =", window.fbGet);
+console.log("fbSet =", window.fbSet);
 
 (async ()=>{
 
