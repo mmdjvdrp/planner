@@ -606,13 +606,15 @@
 
 </div>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+
 import {
   getDatabase,
   ref,
   get,
   set
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAUtA25o7-msDMiWOxtW21FTVJM_fQoRc0",
@@ -621,8 +623,7 @@ const firebaseConfig = {
   projectId: "planner-751c1",
   storageBucket: "planner-751c1.firebasestorage.app",
   messagingSenderId: "324667244818",
-  appId: "1:324667244818:web:d1116c357fac5cc58d33cb",
-  measurementId: "G-161ZWGC962"
+  appId: "1:324667244818:web:d1116c357fac5cc58d33cb"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -632,6 +633,9 @@ window.db = db;
 window.fbRef = ref;
 window.fbGet = get;
 window.fbSet = set;
+
+console.log("FIREBASE OK");
+
 </script>
 
 <script>
