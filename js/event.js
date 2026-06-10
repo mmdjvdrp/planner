@@ -1,1 +1,4 @@
-
+createEvent()
+delEv()
+delCat()
+clearEventForm()
