@@ -137,7 +137,20 @@ setTimeout(() => {
   
 <script>
 const defaultCats = [];
+function load(k, def){
+  try{
+    const v = localStorage.getItem(k);
+    return v ? JSON.parse(v) : def;
+  }catch{
+    return def;
+  }
+}
 
+function save(k, v){
+  try{
+    localStorage.setItem(k, JSON.stringify(v));
+  }catch{}
+}
 let events = load('planner_ev', []);
 let cats   = load('planner_cats', defaultCats);
 let curDate= new Date().toISOString().split('T')[0];
