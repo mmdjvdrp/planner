@@ -138,18 +138,6 @@ setTimeout(() => {
 <script>
 const defaultCats = [];
 
-
-
-  if(!snap.exists()) ;
-
-  const data = snap.val();
-
-  events = data.events || [];
-  cats = data.cats || [];
-  liveSession = data.liveSession || null;
-  theme = data.theme || "dark";
-
-
 let events = load('planner_ev', []);
 let cats   = load('planner_cats', defaultCats);
 let curDate= new Date().toISOString().split('T')[0];
@@ -698,28 +686,6 @@ document.getElementById("logout-btn").onclick = async () => {
 
 };
 
-onAuthStateChanged(
-  auth,
-  async(user)=>{
-
-    if(user){
-
-      await loadCloud();
-
-      renderCats();
-      render();
-      updateLiveButton();
-
-      console.log("LOGIN", user.uid);
-
-    }else{
-
-      console.log("LOGOUT");
-
-    }
-
-  }
-);
 
 </script>
 <script type="module" src="./js/firebase.js"></script>
