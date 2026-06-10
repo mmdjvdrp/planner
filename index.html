@@ -628,15 +628,11 @@ document.getElementById('end-time').addEventListener('keydown', e=>{
 
 setupTimeInput(document.getElementById('start-time'));
 setupTimeInput(document.getElementById('end-time'));
-console.log("db =", window.db);
-console.log("fbGet =", window.fbGet);
-console.log("fbSet =", window.fbSet);
+
 
 window.addEventListener("load", async () => {
 
-  await new Promise(r => setTimeout(r, 1500));
-
-  await loadCloud();
+ 
 
   applyTheme();
   renderCats();
