@@ -1,1 +1,6 @@
-
+renderCats()
+renderTimeline()
+renderReport()
+renderActivityMap()
+render()
+updateLiveButton()
