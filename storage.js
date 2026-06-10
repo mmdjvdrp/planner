@@ -1,17 +1,25 @@
+import {
+  auth,
+  db,
+  ref,
+  get,
+  set
+}
+from "./firebase.js";
+
 export function load(k, def){
- ...
+  try{
+    const v = localStorage.getItem(k);
+    return v ? JSON.parse(v) : def;
+  }catch{
+    return def;
+  }
 }
 
 export function save(k, v){
- ...
-}
-
-export async function saveCloud(){
- ...
-}
-
-export async function loadCloud(){
- ...
+  try{
+    localStorage.setItem(k, JSON.stringify(v));
+  }catch{}
 }
 
 function load(k, def){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch{return def;} }
