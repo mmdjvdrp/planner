@@ -698,9 +698,9 @@ document.getElementById("logout-btn").onclick = async () => {
 
 };
 
-window.onAuthStateChangedUser(
-  window.auth,
-  async (user) => {
+onAuthStateChanged(
+  auth,
+  async(user)=>{
 
     if(user){
 
