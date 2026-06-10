@@ -1,4 +1,0 @@
-createEvent()
-delEv()
-delCat()
-clearEventForm()
