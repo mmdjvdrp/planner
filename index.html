@@ -6,31 +6,12 @@
 <title>تقویم روزانه</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <style>
-body{
-  background:red;
-}
-</style>
 <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-  <h1 style="font-size:80px;color:red">
-TEST123
-</h1>
-  <input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
 
-<button id="register-btn">
-ثبت نام
-</button>
 
-<button id="login-btn">
-ورود
-</button>
 
-<button id="logout-btn">
-خروج
-</button>
 <div class="wrap">
 
   <!-- Header -->
@@ -40,6 +21,19 @@ TEST123
       تقویم روزانه
     </div>
     <div class="date-nav">
+      <div style="display:flex; align-items:center; gap:10px">
+      <span id="welcome-msg" style="font-size:13px; color:var(--muted)"></span>
+      <button id="logout-btn" style="
+        padding:6px 14px;
+        border-radius:8px;
+        border:1px solid var(--border2);
+        background:var(--surface2);
+        color:var(--muted);
+        cursor:pointer;
+        font-family:Vazirmatn,sans-serif;
+        font-size:12px;
+      ">خروج</button>
+    </div>
       <button id="prev-day" title="روز قبل">&#8249;</button>
       <div id="date-label"></div>
       <button id="next-day" title="روز بعد">&#8250;</button>
@@ -135,15 +129,46 @@ TEST123
 
 </div>
 
-  <script>
 
-setTimeout(() => {
-
-}, 1000);
-
-</script>
   
-<script>
+<script type="module">
+import {
+  auth,
+  db,
+  ref,
+  get,      // ← این باید باشه
+  set,
+  onAuthStateChanged,
+  signOut
+} from "./js/firebase.js";
+
+async function saveCloud(){
+  if(!auth.currentUser) return;
+  await set(
+    ref(db, "users/" + auth.currentUser.uid + "/plannerData"),
+    { events, cats, liveSession, theme }
+  );
+}
+
+async function loadCloud(){
+  if(!auth.currentUser) return;
+  const snap = await get(
+    ref(db, "users/" + auth.currentUser.uid + "/plannerData")
+  );
+  if(snap.exists()){
+    const data = snap.val();
+    events      = data.events      || [];
+    cats        = data.cats        || [];
+    theme       = data.theme       || "dark";
+    liveSession = data.liveSession || null;
+
+    // sync به localStorage هم بکن
+    save('planner_ev',    events);
+    save('planner_cats',  cats);
+    save('planner_live',  liveSession);
+    save('planner_theme', theme);
+  }
+}
 const defaultCats = [];
 function load(k, def){
   try{
@@ -500,7 +525,7 @@ document.getElementById('map-next').onclick = ()=>shiftMapMonth(1);
 document.getElementById('map-cat-select').onchange = renderActivityMap;
 document.getElementById('theme-select').onchange = e=>{
   theme=e.target.value;
-  saveCloud();
+   save('planner_theme', theme);
   applyTheme();
 };
 
@@ -517,7 +542,8 @@ document.getElementById('save-cat').onclick = ()=>{
   const color=document.getElementById('new-cat-color').value;
   if(!name){ alert('نام دسته‌بندی را وارد کنید'); return; }
   const nc={id:'c'+Date.now(), name, color};
-  cats.push(nc);
+   cats.push(nc);
+  save('planner_cats', cats);
   saveCloud();
   renderCats();
   document.getElementById('cat-select').value=nc.id;
@@ -555,6 +581,7 @@ function createEvent({title, catId, stRaw, enRaw, date=curDate}){
     sMins, eMins, durMins
   };
   events.push(ev);
+  save('planner_ev', events);
   saveCloud();
   return true;
 }
@@ -638,73 +665,42 @@ setupTimeInput(document.getElementById('start-time'));
 setupTimeInput(document.getElementById('end-time'));
 
 
-window.addEventListener("load", async () => {
+onAuthStateChanged(auth, async (user) => {
+  if(!user){
+    window.location.href = "./login.html";
+    return;
+  }
 
- 
+  // نمایش نام کاربر
+  const snap = await get(ref(db, "users/" + user.uid + "/profile"));
+console.log("snap exists:", snap.exists());
+console.log("snap val:", snap.val());
+  if(snap.exists()){
+    const name = snap.val().name || "";
+    const msg = document.getElementById("welcome-msg");
+    if(msg) msg.textContent = "خوش آمدی، " + name + " 👋";
+  }
 
+  // دکمه خروج
+  document.getElementById("logout-btn").onclick = async () => {
+    await signOut(auth);
+    window.location.href = "./login.html";
+  };
+
+localStorage.removeItem('planner_ev');
+  localStorage.removeItem('planner_cats');
+  localStorage.removeItem('planner_live');
+  events = [];
+  cats = [];
+  liveSession = null;
+
+  await loadCloud();
   applyTheme();
   renderCats();
   render();
   updateLiveButton();
-
 });
 </script>
-  <script>
 
-document.getElementById("register-btn").onclick = async () => {
-
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  try {
-
-    await window.createUserWithEmailAndPassword(
-      window.auth,
-      email,
-      password
-    );
-
-    alert("ثبت نام موفق");
-
-  } catch(err) {
-
-    alert(err.message);
-
-  }
-
-};
-
-document.getElementById("login-btn").onclick = async () => {
-
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  try {
-
-    await window.signInWithEmailAndPassword(
-      window.auth,
-      email,
-      password
-    );
-
-    alert("ورود موفق");
-
-  } catch(err) {
-
-    alert(err.message);
-
-  }
-
-};
-
-document.getElementById("logout-btn").onclick = async () => {
-
-  await window.signOutUser(window.auth);
-
-};
-
-
-</script>
-<script type="module" src="./js/firebase.js"></script>
 </body>
 </html>
