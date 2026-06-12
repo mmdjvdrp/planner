@@ -1,3 +1,5 @@
+
+
 import {
   auth,
   db,
@@ -6,21 +8,12 @@ import {
   set
 }
 from "./firebase.js";
+export let events      = load("events", []);
+export let cats        = load("cats", []);
+export let theme       = load("theme", "dark");
+export let liveSession = load("liveSession", null);
 
-export function load(k, def){
-  try{
-    const v = localStorage.getItem(k);
-    return v ? JSON.parse(v) : def;
-  }catch{
-    return def;
-  }
-}
 
-export function save(k, v){
-  try{
-    localStorage.setItem(k, JSON.stringify(v));
-  }catch{}
-}
 
 function load(k, def){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch{return def;} }
 function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
@@ -36,21 +29,23 @@ async function saveCloud(){
     theme
   };
 
-  await window.fbSet(
-    window.fbRef(
-      window.db,
-      "users/" + window.auth.currentUser.uid + "/plannerData"
-    ),
+ await set(
+    ref(db, "users/" + auth.currentUser.uid + "/plannerData"),
     data
   );
 
 }
 
 async function loadCloud(){
-
- const snap = await window.fbGet(
-  window.fbRef(
-    window.db,
-    "users/" + auth.currentUser.uid + "/plannerData"
-  )
-);
+  const snap = await get(
+    ref(db, "users/" + auth.currentUser.uid + "/plannerData")
+  );
+  if(snap.exists()){
+    const data = snap.val();
+    events = data.events || [];
+    cats   = data.cats   || [];
+    theme  = data.theme  || "dark";
+    liveSession = data.liveSession || null;
+  }
+}
+export { saveCloud, loadCloud, load, save };
