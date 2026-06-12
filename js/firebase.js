@@ -14,7 +14,8 @@ import {
   getDatabase,
   ref,
   get,
-  set
+  set,
+  update
 }
 from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
@@ -38,6 +39,7 @@ export {
   ref,
   get,
   set,
+  update,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
