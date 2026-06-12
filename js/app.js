@@ -1,19 +1,14 @@
+import { auth, db, ref, get, set, onAuthStateChanged }
+  from "./firebase.js";
 
+import { loadCloud } from "./storage.js";
+import { render } from "./ui.js";
 
-import {
-  auth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-}
-from "./firebase.js";
-
-import {
-  load,
-  save
-}
-from "./storage.js";
-window.addEventListener(...)
-document.getElementById(...)
-onclick ها
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "./login.html";
+    return;
+  }
+  await loadCloud();
+  render();
+});
